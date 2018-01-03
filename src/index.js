@@ -29,7 +29,7 @@ exports.parse = function (message) {
  */
 
 exports.publish = function (to, message) {
-  let sns = new SNS(config)
+  let sns = new SNS()
   let p = new Deferred()
 
   let params = {
