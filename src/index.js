@@ -29,17 +29,23 @@ exports.parse = function (message) {
  */
 
 exports.publish = function (to, message) {
-  assert(topicArn, 'publish requires an SNS topic ARN')
-
   let sns = new SNS(config)
   let p = new Deferred()
 
   let params = {
     MessageStructure: 'json',
-    TargetArn: to.TargetArn,
-    TopicArn: to.TopicArn,
     Message: JSON.stringify(message || {})
   }
+
+  if (to.TargetArn) {
+    params.TargetArn = to.TargetArn
+  }
+
+  if (to.TopicArn) {
+    params.TopicArn = to.TopicArn
+  }
+
+  console.log("PARAMS:", params)
 
   sns.publish(params, function (err, data) {
     return err ? p.reject(err) : p.resolve(data)
