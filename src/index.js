@@ -11,16 +11,6 @@ const Deferred = require('deferral')
 const assert = require('assert')
 
 /**
- * Configuration
- */
-
-const config = {
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  region: process.env.AWS_REGION
-}
-
-/**
  * Parse an incoming message (ex. Lambda)
  *
  * @param {Object} message
@@ -38,19 +28,19 @@ exports.parse = function (message) {
  * @param {Message} message
  */
 
-exports.publish = function (topicArn, message) {
+exports.publish = function (to, message) {
   assert(topicArn, 'publish requires an SNS topic ARN')
 
   let sns = new SNS(config)
   let p = new Deferred()
-  let params = {}
 
-  if (typeof topicArn === 'string') {
-    params = { TopicArn: topicArn }
-    params.Message = JSON.stringify(message || {})
-  } else {
-    params = assign({}, topicArn)
+  let params = {
+    MessageStructure: 'json'
+    TargetArn: to.TargetArn,
+    TopicArn: to.TopicArn
   }
+
+  params.Message = JSON.stringify(message || {})
 
   sns.publish(params, function (err, data) {
     return err ? p.reject(err) : p.resolve(data)
