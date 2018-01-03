@@ -35,12 +35,11 @@ exports.publish = function (to, message) {
   let p = new Deferred()
 
   let params = {
-    MessageStructure: 'json'
+    MessageStructure: 'json',
     TargetArn: to.TargetArn,
-    TopicArn: to.TopicArn
+    TopicArn: to.TopicArn,
+    Message: JSON.stringify(message || {})
   }
-
-  params.Message = JSON.stringify(message || {})
 
   sns.publish(params, function (err, data) {
     return err ? p.reject(err) : p.resolve(data)
